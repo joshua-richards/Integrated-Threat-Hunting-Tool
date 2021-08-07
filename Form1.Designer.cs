@@ -66,6 +66,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.windowsEventViewerButton = new System.Windows.Forms.ToolStripButton();
             this.windowsPerformanceMonitorButton = new System.Windows.Forms.ToolStripButton();
+            this.filterInstanceIDToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.filterToolStripTextBox = new System.Windows.Forms.ToolStripComboBox();
             this.filterToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripClearResultsButton = new System.Windows.Forms.ToolStripButton();
@@ -74,12 +75,12 @@ namespace Integrated_Threat_Hunting_Tool
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.systemInfoUserNameLabel = new System.Windows.Forms.Label();
             this.systemInfoOSLabel = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.filterInstanceIDToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -359,6 +360,15 @@ namespace Integrated_Threat_Hunting_Tool
             this.windowsPerformanceMonitorButton.Text = "Windows Performance Monitor";
             this.windowsPerformanceMonitorButton.Click += new System.EventHandler(this.windowsPerformanceMonitorButton_Click);
             // 
+            // filterInstanceIDToolStripTextBox
+            // 
+            this.filterInstanceIDToolStripTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.filterInstanceIDToolStripTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.filterInstanceIDToolStripTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.filterInstanceIDToolStripTextBox.Name = "filterInstanceIDToolStripTextBox";
+            this.filterInstanceIDToolStripTextBox.Size = new System.Drawing.Size(125, 47);
+            this.filterInstanceIDToolStripTextBox.ToolTipText = "Enter an Instance/Event ID (Not Required)";
+            // 
             // filterToolStripTextBox
             // 
             this.filterToolStripTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -450,34 +460,29 @@ namespace Integrated_Threat_Hunting_Tool
             this.systemInfoOSLabel.TabIndex = 4;
             this.systemInfoOSLabel.Text = "systemInfoOSLabel";
             // 
-            // textBox1
+            // dataGridView1
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.HideSelection = false;
-            this.textBox1.Location = new System.Drawing.Point(13, 208);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(913, 349);
-            this.textBox1.TabIndex = 5;
-            // 
-            // filterInstanceIDToolStripTextBox
-            // 
-            this.filterInstanceIDToolStripTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.filterInstanceIDToolStripTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.filterInstanceIDToolStripTextBox.Name = "filterInstanceIDToolStripTextBox";
-            this.filterInstanceIDToolStripTextBox.Size = new System.Drawing.Size(125, 47);
-            this.filterInstanceIDToolStripTextBox.ToolTipText = "Enter an Instance/Event ID (Not Required)";
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(13, 208);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
+            this.dataGridView1.RowHeadersWidth = 51;
+            this.dataGridView1.RowTemplate.Height = 24;
+            this.dataGridView1.Size = new System.Drawing.Size(913, 349);
+            this.dataGridView1.TabIndex = 6;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(938, 586);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.statusStrip1);
@@ -498,6 +503,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.toolStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -542,7 +548,6 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem versionToolStripMenuItem;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.ToolStripButton filterToolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripComboBox filterToolStripTextBox;
@@ -550,6 +555,7 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
         private System.Windows.Forms.ToolStripMenuItem termsAndConditionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox filterInstanceIDToolStripTextBox;
+        private System.Windows.Forms.DataGridView dataGridView1;
     }
 }
 

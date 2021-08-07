@@ -20,7 +20,7 @@ namespace Integrated_Threat_Hunting_Tool
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Before using this software you must accept the terms and conditions.\n\nDo you accept the T&Cs?", "Integrated Threat Hunting Tool - Agreement", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.No)
+            if (MessageBox.Show("Before using this software you must accept the terms and conditions.\n\nDo you accept the T&Cs?\n\nNote: Please run this program with Administrative privilages in order to retrieve all logs.", "Integrated Threat Hunting Tool - Agreement", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.No)
             {
                 System.Windows.Forms.Application.Exit();
             }
@@ -42,7 +42,7 @@ namespace Integrated_Threat_Hunting_Tool
         private void readEventLog()
         {
             //Set event log variables to retrieve
-            //Security,4624
+            //Security, 4624
             //Application, 1001
             //TODO: NEED TO ADD TRY CATCH VERIFICATION - Instance ID also needs to verify it exists etc.
             //TODO: ADD CONDITION TO FETCH SYSMON, Convert 'Sysmon' combo to full length directory in Event Viewer to work properly.
@@ -116,22 +116,27 @@ namespace Integrated_Threat_Hunting_Tool
                 return;
             }
 
+            //Create table object and table columns
+            DataTable table = new DataTable();
+            table.Columns.Add("Time", typeof(string));
+            table.Columns.Add("Source", typeof(string));
+
             foreach (var item in entries)
             {
-                textBox1.Text += item.TimeGenerated.ToString() + Environment.NewLine;
-                textBox1.Text += item.Source.ToString() + Environment.NewLine;
-                //textBox1.Text += "Event ID: "+ instanceID + Environment.NewLine;
-                //textBox1.Text += "----------------------------------------------------" + Environment.NewLine;
+                table.Rows.Add(item.TimeGenerated.ToString(), item.Source.ToString());
                 toolStripProgressBar.PerformStep();
                 /* Some instanceIDs take a long time to load and give the "ContextSwitchDeadlock" exception.
                  * The code below prevents the program from crashing and throwing the exception.
                  */
                 System.Threading.Thread.CurrentThread.Join(0);
             }
+
             //Clear progress bar
             MessageBox.Show(entries.Count + " log(s) have loaded.", "Filter Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             toolStripStatusLabel.Text = entries.Count + " Log(s) Loaded";
             toolStripProgressBar.Value = 1;
+            //Add retrieved entries to DataGridView
+            dataGridView1.DataSource = table;
         }
 
         private void readEventLogHandler()
@@ -199,11 +204,12 @@ namespace Integrated_Threat_Hunting_Tool
 
         private void toolStripClearResultsButton_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(textBox1.Text))
+            if (dataGridView1.Rows.Count != 0)
             {
                 if (MessageBox.Show("Are you sure you want to clear the results", "Verify your actions", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
-                    textBox1.Text = "";
+                    dataGridView1.DataSource = null;
+                    dataGridView1.Refresh();
                     toolStripStatusLabel.Text = "";
                 }
             }  
