@@ -88,6 +88,7 @@ namespace Integrated_Threat_Hunting_Tool
                 toolStripProgressBar.PerformStep();
             }
             //Clear progress bar
+            MessageBox.Show(entries.Count + " log(s) have loaded.", "Filter Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             toolStripStatusLabel.Text = entries.Count + " Log(s) Loaded";
             toolStripProgressBar.Value = 1;
         }
