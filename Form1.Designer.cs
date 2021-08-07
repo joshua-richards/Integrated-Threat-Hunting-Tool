@@ -75,6 +75,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.systemInfoUserNameLabel = new System.Windows.Forms.Label();
             this.systemInfoOSLabel = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.filterInstanceIDToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -91,7 +92,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(938, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(938, 30);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -326,11 +327,12 @@ namespace Integrated_Threat_Hunting_Tool
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.windowsEventViewerButton,
             this.windowsPerformanceMonitorButton,
+            this.filterInstanceIDToolStripTextBox,
             this.filterToolStripTextBox,
             this.filterToolStripButton,
             this.toolStripClearResultsButton,
             this.toolStripSeparator3});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 28);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 30);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(938, 47);
             this.toolStrip1.Stretch = true;
@@ -364,10 +366,13 @@ namespace Integrated_Threat_Hunting_Tool
             this.filterToolStripTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.filterToolStripTextBox.Items.AddRange(new object[] {
             "Application",
-            "Security"});
+            "Security",
+            "Add others here...",
+            "Sysmon"});
             this.filterToolStripTextBox.Name = "filterToolStripTextBox";
             this.filterToolStripTextBox.Size = new System.Drawing.Size(200, 47);
             this.filterToolStripTextBox.ToolTipText = "Enter or Select the log source that you want to view";
+            this.filterToolStripTextBox.Click += new System.EventHandler(this.filterToolStripTextBox_Click);
             // 
             // filterToolStripButton
             // 
@@ -459,6 +464,14 @@ namespace Integrated_Threat_Hunting_Tool
             this.textBox1.Size = new System.Drawing.Size(913, 349);
             this.textBox1.TabIndex = 5;
             // 
+            // filterInstanceIDToolStripTextBox
+            // 
+            this.filterInstanceIDToolStripTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.filterInstanceIDToolStripTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.filterInstanceIDToolStripTextBox.Name = "filterInstanceIDToolStripTextBox";
+            this.filterInstanceIDToolStripTextBox.Size = new System.Drawing.Size(125, 47);
+            this.filterInstanceIDToolStripTextBox.ToolTipText = "Enter an Instance/Event ID (Not Required)";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -536,6 +549,7 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.ToolStripButton toolStripClearResultsButton;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
         private System.Windows.Forms.ToolStripMenuItem termsAndConditionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox filterInstanceIDToolStripTextBox;
     }
 }
 

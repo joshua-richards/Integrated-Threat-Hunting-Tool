@@ -43,9 +43,12 @@ namespace Integrated_Threat_Hunting_Tool
         {
             //Set event log variables to retrieve
             //Security,4624
+            //Application, 1001
             //TODO: NEED TO ADD TRY CATCH VERIFICATION - Instance ID also needs to verify it exists etc.
             //TODO: ADD CONDITION TO FETCH SYSMON, Convert 'Sysmon' combo to full length directory in Event Viewer to work properly.
             string eventName;
+            int instanceID;
+
             if (filterToolStripTextBox.Text == "")
             {
                 MessageBox.Show("Please select a filter from the dropdown list", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -55,10 +58,35 @@ namespace Integrated_Threat_Hunting_Tool
             {
                 eventName = filterToolStripTextBox.Text;
             }
-            int instanceID = 1001;
+
+            //Verifies that the instanceID value entered by the user is a valid number
+            if (string.IsNullOrEmpty(filterInstanceIDToolStripTextBox.Text))
+            {
+                //TODO: Change from 1001 so that instanceID is null and that LINQ query does not query it!
+                //TODO: If null, alert user with message box that it may take a long time to retrieve all logs
+                instanceID = 1001;
+            }
+            else
+            {
+                try
+                {
+                    instanceID = Int32.Parse(filterInstanceIDToolStripTextBox.Text);
+                    //TODO: Need to return the variable back but not outside of the method???
+                }
+                catch (Exception)
+                {
+                    //Throw an error message if the instanceID cannot be parsed to a string.
+                    if (MessageBox.Show("The Instance/Event ID is incorrect. Please enter a valid number.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error) == DialogResult.OK)
+                    {
+                        return;
+                    }
+                    throw;
+                }
+            }
 
             EventLog log = new EventLog(eventName);
             var entries = log.Entries.Cast<EventLogEntry>()
+                //TODO: Need to ensure that if value is blank, then instanceID is not queried.
                                       .Where(x => x.InstanceId == instanceID)
                                       .Select(x => new
                                       {
@@ -73,11 +101,20 @@ namespace Integrated_Threat_Hunting_Tool
                                           x.InstanceId,
                                       }).ToList();
 
-            //Progress bar
+            //Progress bar parameters
             toolStripProgressBar.Minimum = 1;
             toolStripProgressBar.Maximum = entries.Count;
             toolStripProgressBar.Step = 1;
-            toolStripProgressBar.Value = 1;
+            //Alerts the user with an error message if the instanceID does not exist for the selected event log source.
+            if (entries.Count > 0)
+            {
+                toolStripProgressBar.Value = 1;
+            }
+            else
+            {
+                MessageBox.Show("The Instance/Event ID " + instanceID + " does not exist for this source\n\nPlease select another filter or valid ID", "Incorrect Instance/Event ID", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             foreach (var item in entries)
             {
@@ -86,11 +123,21 @@ namespace Integrated_Threat_Hunting_Tool
                 //textBox1.Text += "Event ID: "+ instanceID + Environment.NewLine;
                 //textBox1.Text += "----------------------------------------------------" + Environment.NewLine;
                 toolStripProgressBar.PerformStep();
+                /* Some instanceIDs take a long time to load and give the "ContextSwitchDeadlock" exception.
+                 * The code below prevents the program from crashing and throwing the exception.
+                 */
+                System.Threading.Thread.CurrentThread.Join(0);
             }
             //Clear progress bar
             MessageBox.Show(entries.Count + " log(s) have loaded.", "Filter Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             toolStripStatusLabel.Text = entries.Count + " Log(s) Loaded";
             toolStripProgressBar.Value = 1;
+        }
+
+        private void readEventLogHandler()
+        {
+            //TODO: This code should check whether the filter is standard or Sysmon source and determine which EventLog class 
+            //should be used.
         }
                               
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -152,7 +199,7 @@ namespace Integrated_Threat_Hunting_Tool
 
         private void toolStripClearResultsButton_Click(object sender, EventArgs e)
         {
-            if (textBox1.Text != "")
+            if (!string.IsNullOrEmpty(textBox1.Text))
             {
                 if (MessageBox.Show("Are you sure you want to clear the results", "Verify your actions", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
@@ -160,6 +207,11 @@ namespace Integrated_Threat_Hunting_Tool
                     toolStripStatusLabel.Text = "";
                 }
             }  
+        }
+
+        private void filterToolStripTextBox_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
