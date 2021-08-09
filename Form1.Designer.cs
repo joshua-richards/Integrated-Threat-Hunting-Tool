@@ -76,6 +76,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.systemInfoUserNameLabel = new System.Windows.Forms.Label();
             this.systemInfoOSLabel = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -93,7 +94,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(938, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(938, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -333,7 +334,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.filterToolStripButton,
             this.toolStripClearResultsButton,
             this.toolStripSeparator3});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 30);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 28);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(938, 47);
             this.toolStrip1.Stretch = true;
@@ -363,7 +364,6 @@ namespace Integrated_Threat_Hunting_Tool
             // filterInstanceIDToolStripTextBox
             // 
             this.filterInstanceIDToolStripTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.filterInstanceIDToolStripTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.filterInstanceIDToolStripTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.filterInstanceIDToolStripTextBox.Name = "filterInstanceIDToolStripTextBox";
             this.filterInstanceIDToolStripTextBox.Size = new System.Drawing.Size(125, 47);
@@ -382,7 +382,6 @@ namespace Integrated_Threat_Hunting_Tool
             this.filterToolStripTextBox.Name = "filterToolStripTextBox";
             this.filterToolStripTextBox.Size = new System.Drawing.Size(200, 47);
             this.filterToolStripTextBox.ToolTipText = "Enter or Select the log source that you want to view";
-            this.filterToolStripTextBox.Click += new System.EventHandler(this.filterToolStripTextBox_Click);
             // 
             // filterToolStripButton
             // 
@@ -464,6 +463,7 @@ namespace Integrated_Threat_Hunting_Tool
             // 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AllowUserToOrderColumns = true;
             this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -556,6 +556,7 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.ToolStripMenuItem termsAndConditionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox filterInstanceIDToolStripTextBox;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 

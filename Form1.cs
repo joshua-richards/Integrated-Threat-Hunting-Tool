@@ -16,6 +16,10 @@ namespace Integrated_Threat_Hunting_Tool
         public Form1()
         {
             InitializeComponent();
+            //Initalise BackgroundWorker to do the Event Log gathering
+            backgroundWorker1.DoWork += backgroundWorker1_DoWork;
+            backgroundWorker1.ProgressChanged += backgroundWorker1_ProgressChanged;
+            backgroundWorker1.WorkerReportsProgress = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -44,34 +48,37 @@ namespace Integrated_Threat_Hunting_Tool
             //Set event log variables to retrieve
             //Security, 4624
             //Application, 1001
-            //TODO: NEED TO ADD TRY CATCH VERIFICATION - Instance ID also needs to verify it exists etc.
             //TODO: ADD CONDITION TO FETCH SYSMON, Convert 'Sysmon' combo to full length directory in Event Viewer to work properly.
+            //Add this to another method/function instead of this one because it's getting too clutered and won't flow well.
             string eventName;
-            int instanceID;
+            int instanceID = 0;
+            bool instanceFilterIsNull;
 
-            if (filterToolStripTextBox.Text == "")
+            if (string.IsNullOrEmpty(filterToolStripTextBox.Text))
             {
                 MessageBox.Show("Please select a filter from the dropdown list", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             else
             {
+                //Selects filter value from dropdown list
                 eventName = filterToolStripTextBox.Text;
             }
 
             //Verifies that the instanceID value entered by the user is a valid number
             if (string.IsNullOrEmpty(filterInstanceIDToolStripTextBox.Text))
             {
-                //TODO: Change from 1001 so that instanceID is null and that LINQ query does not query it!
-                //TODO: If null, alert user with message box that it may take a long time to retrieve all logs
-                instanceID = 1001;
+                //Use filter is null bool for determining which EventLog class to use below (if/else)
+                instanceFilterIsNull = true;
+                MessageBox.Show("This process may take a while.", "Retrieving all Instance/Event IDs", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 try
                 {
                     instanceID = Int32.Parse(filterInstanceIDToolStripTextBox.Text);
-                    //TODO: Need to return the variable back but not outside of the method???
+                    instanceFilterIsNull = false;
+                    //TODO: Need to return the variable back but not outside of the method
                 }
                 catch (Exception)
                 {
@@ -85,28 +92,32 @@ namespace Integrated_Threat_Hunting_Tool
             }
 
             EventLog log = new EventLog(eventName);
-            var entries = log.Entries.Cast<EventLogEntry>()
-                //TODO: Need to ensure that if value is blank, then instanceID is not queried.
-                                      .Where(x => x.InstanceId == instanceID)
-                                      .Select(x => new
-                                      {
-                                          x.MachineName,
-                                          x.Site,
-                                          x.Source,
-                                          x.Message,
-                                          x.TimeGenerated,
-                                          x.Index,
-                                          x.UserName,
-                                          x.Category,
-                                          x.InstanceId,
-                                      }).ToList();
+            var entries = log.Entries.Cast<EventLogEntry>();
+            //If the filter has an Instance ID value, then it will search for it using the below statement
+            if (!instanceFilterIsNull)
+            {
+                entries = entries.Where(x => x.InstanceId == instanceID);
+            }
+            var entriesQuery = entries.Select(x => new
+            {
+                x.MachineName,
+                x.Site,
+                x.Source,
+                x.Message,
+                x.TimeGenerated,
+                x.Index,
+                x.UserName,
+                x.Category,
+                x.InstanceId,
+            }).ToList();
 
             //Progress bar parameters
+            //TODO: GET RID AND ADD TO BW WORKER PROGREES
             toolStripProgressBar.Minimum = 1;
-            toolStripProgressBar.Maximum = entries.Count;
+            toolStripProgressBar.Maximum = entriesQuery.Count;
             toolStripProgressBar.Step = 1;
             //Alerts the user with an error message if the instanceID does not exist for the selected event log source.
-            if (entries.Count > 0)
+            if (entriesQuery.Count > 0)
             {
                 toolStripProgressBar.Value = 1;
             }
@@ -118,25 +129,50 @@ namespace Integrated_Threat_Hunting_Tool
 
             //Create table object and table columns
             DataTable table = new DataTable();
+            table.Columns.Add("Log No", typeof(int));
             table.Columns.Add("Time", typeof(string));
+            table.Columns.Add("Instance/Event ID", typeof(string));
             table.Columns.Add("Source", typeof(string));
+            table.Columns.Add("PC Name", typeof(string));
 
+            //TODO: Add this to BackgroundWorker in order to run on another thread whilst also keeping the UI + Progress bar running
+            int logNumber = 1;
             foreach (var item in entries)
             {
-                table.Rows.Add(item.TimeGenerated.ToString(), item.Source.ToString());
+                //TODO: Change this to the new background worker step, does not need to be added here, can be done in seperate BW method
                 toolStripProgressBar.PerformStep();
+                //Add Rows to the DataGridView based on retrieved log entries
+                table.Rows.Add(
+                    logNumber,
+                    item.TimeGenerated.ToString(), 
+                    item.InstanceId.ToString(),
+                    item.Source.ToString(),
+                    item.MachineName.ToString()
+                    );
+                logNumber++;
                 /* Some instanceIDs take a long time to load and give the "ContextSwitchDeadlock" exception.
                  * The code below prevents the program from crashing and throwing the exception.
                  */
-                System.Threading.Thread.CurrentThread.Join(0);
+                //System.Threading.Thread.CurrentThread.Join(0);
             }
 
-            //Clear progress bar
-            MessageBox.Show(entries.Count + " log(s) have loaded.", "Filter Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            toolStripStatusLabel.Text = entries.Count + " Log(s) Loaded";
+            //Clear progress bar and show message with number of logs found
+            MessageBox.Show(entriesQuery.Count + " log(s) have loaded.", "Filter Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            toolStripStatusLabel.Text = entriesQuery.Count + " Log(s) Loaded";
             toolStripProgressBar.Value = 1;
             //Add retrieved entries to DataGridView
             dataGridView1.DataSource = table;
+        }
+
+        //Background worker is used in order to populate the DataGridView using another thread in the background
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            toolStripProgressBar.Value = e.ProgressPercentage;
         }
 
         private void readEventLogHandler()
@@ -213,11 +249,6 @@ namespace Integrated_Threat_Hunting_Tool
                     toolStripStatusLabel.Text = "";
                 }
             }  
-        }
-
-        private void filterToolStripTextBox_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
