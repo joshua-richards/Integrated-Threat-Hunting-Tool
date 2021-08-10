@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -59,6 +60,13 @@ namespace Integrated_Threat_Hunting_Tool
                 MessageBox.Show("Please select a filter from the dropdown list", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            else if (filterToolStripTextBox.Text == "Sysmon")
+            {
+                //TODO: Implement Sysmon EventLog here (will have to use EventLogQuery/Reader instead of standard approach)
+                MessageBox.Show("Sysmon not yet implemented", "Sysmon");
+                eventName = "Sysmon";
+                return;
+            }
             else
             {
                 //Selects filter value from dropdown list
@@ -70,7 +78,7 @@ namespace Integrated_Threat_Hunting_Tool
             {
                 //Use filter is null bool for determining which EventLog class to use below (if/else)
                 instanceFilterIsNull = true;
-                MessageBox.Show("This process may take a while.", "Retrieving all Instance/Event IDs", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("This process may take a while.", "Retrieving all event logs", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
@@ -109,6 +117,7 @@ namespace Integrated_Threat_Hunting_Tool
                 x.UserName,
                 x.Category,
                 x.InstanceId,
+                x.EntryType
             }).ToList();
 
             //Progress bar parameters
@@ -132,12 +141,13 @@ namespace Integrated_Threat_Hunting_Tool
             table.Columns.Add("Log No", typeof(int));
             table.Columns.Add("Time", typeof(string));
             table.Columns.Add("Instance/Event ID", typeof(string));
+            table.Columns.Add("Entry Type", typeof(string));
             table.Columns.Add("Source", typeof(string));
             table.Columns.Add("PC Name", typeof(string));
 
             //TODO: Add this to BackgroundWorker in order to run on another thread whilst also keeping the UI + Progress bar running
             int logNumber = 1;
-            foreach (var item in entries)
+            foreach (var item in entriesQuery)
             {
                 //TODO: Change this to the new background worker step, does not need to be added here, can be done in seperate BW method
                 toolStripProgressBar.PerformStep();
@@ -146,6 +156,7 @@ namespace Integrated_Threat_Hunting_Tool
                     logNumber,
                     item.TimeGenerated.ToString(), 
                     item.InstanceId.ToString(),
+                    item.EntryType.ToString(),
                     item.Source.ToString(),
                     item.MachineName.ToString()
                     );
@@ -156,18 +167,19 @@ namespace Integrated_Threat_Hunting_Tool
                 //System.Threading.Thread.CurrentThread.Join(0);
             }
 
-            //Clear progress bar and show message with number of logs found
+            //Show message with number of logs found
             MessageBox.Show(entriesQuery.Count + " log(s) have loaded.", "Filter Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            toolStripStatusLabel.Text = entriesQuery.Count + " Log(s) Loaded";
-            toolStripProgressBar.Value = 1;
             //Add retrieved entries to DataGridView
             dataGridView1.DataSource = table;
+            //Clear progress bar and show number of logs
+            toolStripStatusLabel.Text = entriesQuery.Count + " Log(s) Loaded";
+            toolStripProgressBar.Value = 1;   
         }
 
         //Background worker is used in order to populate the DataGridView using another thread in the background
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-
+            //TODO: Add here the iteration used in the for each loop of the readEventLog method
         }
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -249,6 +261,17 @@ namespace Integrated_Threat_Hunting_Tool
                     toolStripStatusLabel.Text = "";
                 }
             }  
+        }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dataGridView1.CurrentCell.ColumnIndex.Equals(2) && e.RowIndex != -1)
+            {
+                if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
+                {
+                    filterInstanceIDToolStripTextBox.Text = dataGridView1.CurrentCell.Value.ToString();
+                }
+            }
         }
     }
 }

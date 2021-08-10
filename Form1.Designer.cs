@@ -364,6 +364,7 @@ namespace Integrated_Threat_Hunting_Tool
             // filterInstanceIDToolStripTextBox
             // 
             this.filterInstanceIDToolStripTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.filterInstanceIDToolStripTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.filterInstanceIDToolStripTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.filterInstanceIDToolStripTextBox.Name = "filterInstanceIDToolStripTextBox";
             this.filterInstanceIDToolStripTextBox.Size = new System.Drawing.Size(125, 47);
@@ -377,7 +378,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.filterToolStripTextBox.Items.AddRange(new object[] {
             "Application",
             "Security",
-            "Add others here...",
+            "System",
             "Sysmon"});
             this.filterToolStripTextBox.Name = "filterToolStripTextBox";
             this.filterToolStripTextBox.Size = new System.Drawing.Size(200, 47);
@@ -476,6 +477,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(913, 349);
             this.dataGridView1.TabIndex = 6;
+            this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
             // 
             // Form1
             // 
