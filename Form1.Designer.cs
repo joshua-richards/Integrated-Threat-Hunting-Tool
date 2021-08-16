@@ -409,12 +409,11 @@ namespace Integrated_Threat_Hunting_Tool
             // 
             this.filterSourceToolStripTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.filterSourceToolStripTextBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.filterSourceToolStripTextBox.DropDownWidth = 300;
             this.filterSourceToolStripTextBox.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.filterSourceToolStripTextBox.Items.AddRange(new object[] {
-            "",
-            "ADD AN ITERATION OF SOURCES HERE IN THE CODE"});
             this.filterSourceToolStripTextBox.Name = "filterSourceToolStripTextBox";
             this.filterSourceToolStripTextBox.Size = new System.Drawing.Size(200, 47);
+            this.filterSourceToolStripTextBox.Sorted = true;
             this.filterSourceToolStripTextBox.ToolTipText = "Select the log sources that you want to view";
             // 
             // sourceToolStripLabel
@@ -437,6 +436,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.filterTypeToolStripTextBox.Name = "filterTypeToolStripTextBox";
             this.filterTypeToolStripTextBox.Size = new System.Drawing.Size(200, 47);
             this.filterTypeToolStripTextBox.ToolTipText = "Select the log types that you want to view";
+            this.filterTypeToolStripTextBox.DropDownClosed += new System.EventHandler(this.filterTypeToolStripTextBox_DropDownClosed);
             // 
             // typeToolStripLabel
             // 

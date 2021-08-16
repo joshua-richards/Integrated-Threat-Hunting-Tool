@@ -33,7 +33,7 @@ namespace Integrated_Threat_Hunting_Tool
             systemInfoMachineLabel.Text = "PC Name: " + Environment.MachineName;
             systemInfoOSLabel.Text = "Windows Version: " + Environment.OSVersion;
             systemInfoUserNameLabel.Text = "Username : " + Environment.UserName;
-            toolStripStatusLabel.Text = "";  
+            toolStripStatusLabel.Text = "";
         }
 
         private void Form1_Closing(object sender, FormClosingEventArgs e)
@@ -51,7 +51,7 @@ namespace Integrated_Threat_Hunting_Tool
             //Application, 1001
             //TODO: ADD CONDITION TO FETCH SYSMON, Convert 'Sysmon' combo to full length directory in Event Viewer to work properly.
             //Add this to another method/function instead of this one because it's getting too clutered and won't flow well.
-            string eventName;
+            string filterType;
             int instanceID = 0;
             bool instanceFilterIsNull;
 
@@ -64,13 +64,13 @@ namespace Integrated_Threat_Hunting_Tool
             {
                 //TODO: Implement Sysmon EventLog here (will have to use EventLogQuery/Reader instead of standard approach)
                 MessageBox.Show("Sysmon not yet implemented", "Sysmon");
-                eventName = "Sysmon";
+                filterType = "Sysmon";
                 return;
             }
             else
             {
                 //Selects filter value from dropdown list
-                eventName = filterTypeToolStripTextBox.Text;
+                filterType = filterTypeToolStripTextBox.Text;
             }
 
             //Verifies that the instanceID value entered by the user is a valid number
@@ -98,7 +98,7 @@ namespace Integrated_Threat_Hunting_Tool
                 }
             }
 
-            EventLog log = new EventLog(eventName);
+            EventLog log = new EventLog(filterType);
             var entries = log.Entries.Cast<EventLogEntry>();
             //If the filter has an Instance ID value, then it will search for it using the below statement
             if (!instanceFilterIsNull)
@@ -192,6 +192,23 @@ namespace Integrated_Threat_Hunting_Tool
             //TODO: This code should check whether the filter is standard or Sysmon source and determine which EventLog class 
             //should be used.
         }
+
+        private void getSources(string filterType)
+        {
+            EventLog log = new EventLog(filterType);
+            var entries = log.Entries.Cast<EventLogEntry>();
+            //TODO: Ensure that Sysmon is handled correctly (if statement needed)
+            var entriesQuery = entries.Select(x => new {x.Source}).ToList();
+            //Iterate through the type of entry logs and gather the sources available and add them to the dropdown list 
+            foreach (var item in entriesQuery)
+            {
+                //If the source does not exist in the dropdownlist already then add it to the list
+                if (!filterSourceToolStripTextBox.Items.Contains(item.Source.ToString()))
+                {
+                    filterSourceToolStripTextBox.Items.Add(item.Source.ToString());
+                }
+            }
+        }
                               
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -279,6 +296,15 @@ namespace Integrated_Threat_Hunting_Tool
             //Display the time with seconds in the toolStrip for convenience
             DateTime now = DateTime.Now;
             datetimeToolStripLabel.Text = now.ToString("T");
+        }
+
+        private void filterTypeToolStripTextBox_DropDownClosed(object sender, EventArgs e)
+        {
+            if (filterTypeToolStripTextBox.SelectedIndex >= 0)
+            {
+                var filterType = filterTypeToolStripTextBox.SelectedItem.ToString();
+                getSources(filterType);
+            }
         }
     }
 }
