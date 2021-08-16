@@ -33,7 +33,7 @@ namespace Integrated_Threat_Hunting_Tool
             systemInfoMachineLabel.Text = "PC Name: " + Environment.MachineName;
             systemInfoOSLabel.Text = "Windows Version: " + Environment.OSVersion;
             systemInfoUserNameLabel.Text = "Username : " + Environment.UserName;
-            toolStripStatusLabel.Text = "";
+            toolStripStatusLabel.Text = "";  
         }
 
         private void Form1_Closing(object sender, FormClosingEventArgs e)
@@ -55,12 +55,12 @@ namespace Integrated_Threat_Hunting_Tool
             int instanceID = 0;
             bool instanceFilterIsNull;
 
-            if (string.IsNullOrEmpty(filterToolStripTextBox.Text))
+            if (string.IsNullOrEmpty(filterTypeToolStripTextBox.Text))
             {
                 MessageBox.Show("Please select a filter from the dropdown list", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            else if (filterToolStripTextBox.Text == "Sysmon")
+            else if (filterTypeToolStripTextBox.Text == "Sysmon")
             {
                 //TODO: Implement Sysmon EventLog here (will have to use EventLogQuery/Reader instead of standard approach)
                 MessageBox.Show("Sysmon not yet implemented", "Sysmon");
@@ -70,7 +70,7 @@ namespace Integrated_Threat_Hunting_Tool
             else
             {
                 //Selects filter value from dropdown list
-                eventName = filterToolStripTextBox.Text;
+                eventName = filterTypeToolStripTextBox.Text;
             }
 
             //Verifies that the instanceID value entered by the user is a valid number
@@ -86,7 +86,6 @@ namespace Integrated_Threat_Hunting_Tool
                 {
                     instanceID = Int32.Parse(filterInstanceIDToolStripTextBox.Text);
                     instanceFilterIsNull = false;
-                    //TODO: Need to return the variable back but not outside of the method
                 }
                 catch (Exception)
                 {
@@ -106,6 +105,7 @@ namespace Integrated_Threat_Hunting_Tool
             {
                 entries = entries.Where(x => x.InstanceId == instanceID);
             }
+
             var entriesQuery = entries.Select(x => new
             {
                 x.MachineName,
@@ -272,6 +272,13 @@ namespace Integrated_Threat_Hunting_Tool
                     filterInstanceIDToolStripTextBox.Text = dataGridView1.CurrentCell.Value.ToString();
                 }
             }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            //Display the time with seconds in the toolStrip for convenience
+            DateTime now = DateTime.Now;
+            datetimeToolStripLabel.Text = now.ToString("T");
         }
     }
 }
