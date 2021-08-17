@@ -53,7 +53,7 @@ namespace Integrated_Threat_Hunting_Tool
             //Add this to another method/function instead of this one because it's getting too clutered and won't flow well.
             string filterType;
             int instanceID = 0;
-            bool instanceFilterIsNull;
+            bool instanceFilterIsNull = false;
 
             if (string.IsNullOrEmpty(filterTypeToolStripTextBox.Text))
             {
@@ -63,7 +63,7 @@ namespace Integrated_Threat_Hunting_Tool
             else if (filterTypeToolStripTextBox.Text == "Sysmon")
             {
                 //TODO: Implement Sysmon EventLog here (will have to use EventLogQuery/Reader instead of standard approach)
-                MessageBox.Show("Sysmon not yet implemented", "Sysmon");
+                MessageBox.Show("Sysmon not yet implemented.", "Sysmon");
                 filterType = "Sysmon";
                 return;
             }
@@ -74,11 +74,16 @@ namespace Integrated_Threat_Hunting_Tool
             }
 
             //Verifies that the instanceID value entered by the user is a valid number
-            if (string.IsNullOrEmpty(filterInstanceIDToolStripTextBox.Text))
+            if (string.IsNullOrEmpty(filterInstanceIDToolStripTextBox.Text) && filterSourceToolStripTextBox.SelectedIndex >= 0)
+            {
+                instanceFilterIsNull = true;
+                MessageBox.Show("Retieving event logs based on source", "This process may take a while.", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else if (string.IsNullOrEmpty(filterInstanceIDToolStripTextBox.Text))
             {
                 //Use filter is null bool for determining which EventLog class to use below (if/else)
                 instanceFilterIsNull = true;
-                MessageBox.Show("This process may take a while.", "Retrieving all event logs", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Retrieving all event logs", "This process may take a while.", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
@@ -100,11 +105,19 @@ namespace Integrated_Threat_Hunting_Tool
 
             EventLog log = new EventLog(filterType);
             var entries = log.Entries.Cast<EventLogEntry>();
-            //If the filter has an Instance ID value, then it will search for it using the below statement
-            if (!instanceFilterIsNull)
+            //If the filter has an Instance ID and/or source value, then it will search for it using the below statement
+            if (instanceFilterIsNull && filterSourceToolStripTextBox.SelectedIndex >= 0)
+            {
+                entries = entries.Where(x => x.Source == filterSourceToolStripTextBox.Text.ToString());
+            }
+            else if (!instanceFilterIsNull)
             {
                 entries = entries.Where(x => x.InstanceId == instanceID);
             }
+            //else if (true)
+            //{
+            //    //TODO: Add statement to check if source AND instanceID is selected and add new WHERE query
+            //}
 
             var entriesQuery = entries.Select(x => new
             {
@@ -164,7 +177,7 @@ namespace Integrated_Threat_Hunting_Tool
                 /* Some instanceIDs take a long time to load and give the "ContextSwitchDeadlock" exception.
                  * The code below prevents the program from crashing and throwing the exception.
                  */
-                //System.Threading.Thread.CurrentThread.Join(0);
+                System.Threading.Thread.CurrentThread.Join(0);
             }
 
             //Show message with number of logs found
@@ -195,19 +208,22 @@ namespace Integrated_Threat_Hunting_Tool
 
         private void getSources(string filterType)
         {
-            EventLog log = new EventLog(filterType);
-            var entries = log.Entries.Cast<EventLogEntry>();
             //TODO: Ensure that Sysmon is handled correctly (if statement needed)
-            var entriesQuery = entries.Select(x => new {x.Source}).ToList();
-            //Iterate through the type of entry logs and gather the sources available and add them to the dropdown list 
-            foreach (var item in entriesQuery)
+            if (filterType != "Sysmon")
             {
-                //If the source does not exist in the dropdownlist already then add it to the list
-                if (!filterSourceToolStripTextBox.Items.Contains(item.Source.ToString()))
+                EventLog log = new EventLog(filterType);
+                var entries = log.Entries.Cast<EventLogEntry>();
+                var entriesQuery = entries.Select(x => new { x.Source }).ToList();
+                //Iterate through the type of entry logs and gather the sources available and add them to the dropdown list 
+                foreach (var item in entriesQuery)
                 {
-                    filterSourceToolStripTextBox.Items.Add(item.Source.ToString());
+                    //If the source does not exist in the dropdownlist already then add it to the list
+                    if (!filterSourceToolStripTextBox.Items.Contains(item.Source.ToString()))
+                    {
+                        filterSourceToolStripTextBox.Items.Add(item.Source.ToString());
+                    }
                 }
-            }
+            } 
         }
                               
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -282,11 +298,20 @@ namespace Integrated_Threat_Hunting_Tool
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            //Double clicking on the cells (instance ID, source) adds the current cell value to the corresponding filter text boxes
             if (dataGridView1.CurrentCell.ColumnIndex.Equals(2) && e.RowIndex != -1)
             {
                 if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
                 {
                     filterInstanceIDToolStripTextBox.Text = dataGridView1.CurrentCell.Value.ToString();
+                }
+            }
+            else if (dataGridView1.CurrentCell.ColumnIndex.Equals(4) && e.RowIndex != -1)
+            {
+                if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
+                {
+                    var sourceIndex = filterSourceToolStripTextBox.Items.IndexOf(dataGridView1.CurrentCell.Value.ToString());
+                    filterSourceToolStripTextBox.SelectedIndex = sourceIndex;
                 }
             }
         }
@@ -300,6 +325,7 @@ namespace Integrated_Threat_Hunting_Tool
 
         private void filterTypeToolStripTextBox_DropDownClosed(object sender, EventArgs e)
         {
+            //Runs the getSources function if a type is selected from the filter dropdown list
             if (filterTypeToolStripTextBox.SelectedIndex >= 0)
             {
                 var filterType = filterTypeToolStripTextBox.SelectedItem.ToString();
