@@ -53,7 +53,7 @@ namespace Integrated_Threat_Hunting_Tool
             //Add this to another method/function instead of this one because it's getting too clutered and won't flow well.
             string filterType;
             int instanceID = 0;
-            bool instanceFilterIsNull = false;
+            bool instanceIDFilterIsNull = false;
 
             if (string.IsNullOrEmpty(filterTypeToolStripTextBox.Text))
             {
@@ -74,23 +74,29 @@ namespace Integrated_Threat_Hunting_Tool
             }
 
             //Verifies that the instanceID value entered by the user is a valid number
-            if (string.IsNullOrEmpty(filterInstanceIDToolStripTextBox.Text) && filterSourceToolStripTextBox.SelectedIndex >= 0)
+            if (string.IsNullOrEmpty(filterInstanceIDToolStripTextBox.Text) && filterSourceToolStripTextBox.SelectedIndex >= 1)
             {
-                instanceFilterIsNull = true;
-                MessageBox.Show("Retieving event logs based on source", "This process may take a while.", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                instanceIDFilterIsNull = true;
+                if (MessageBox.Show("Retrieving event logs based on source.\n\nAre you sure you wish to continue?", "This process may take a while", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.Cancel)
+                {
+                    return;
+                }
             }
             else if (string.IsNullOrEmpty(filterInstanceIDToolStripTextBox.Text))
             {
                 //Use filter is null bool for determining which EventLog class to use below (if/else)
-                instanceFilterIsNull = true;
-                MessageBox.Show("Retrieving all event logs", "This process may take a while.", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                instanceIDFilterIsNull = true;
+                if (MessageBox.Show("Retrieving all event logs.\n\nAre you sure you wish to continue?", "This process may take a while", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.Cancel)
+                {
+                    return;
+                }
             }
             else
             {
                 try
                 {
                     instanceID = Int32.Parse(filterInstanceIDToolStripTextBox.Text);
-                    instanceFilterIsNull = false;
+                    instanceIDFilterIsNull = false;
                 }
                 catch (Exception)
                 {
@@ -106,18 +112,19 @@ namespace Integrated_Threat_Hunting_Tool
             EventLog log = new EventLog(filterType);
             var entries = log.Entries.Cast<EventLogEntry>();
             //If the filter has an Instance ID and/or source value, then it will search for it using the below statement
-            if (instanceFilterIsNull && filterSourceToolStripTextBox.SelectedIndex >= 0)
+            if (instanceIDFilterIsNull && filterSourceToolStripTextBox.SelectedIndex >= 1)
             {
                 entries = entries.Where(x => x.Source == filterSourceToolStripTextBox.Text.ToString());
             }
-            else if (!instanceFilterIsNull)
+            else if (!instanceIDFilterIsNull && filterSourceToolStripTextBox.SelectedIndex == 1)
             {
                 entries = entries.Where(x => x.InstanceId == instanceID);
             }
-            //else if (true)
-            //{
-            //    //TODO: Add statement to check if source AND instanceID is selected and add new WHERE query
-            //}
+            else if (!instanceIDFilterIsNull && filterSourceToolStripTextBox.SelectedIndex >= 1)
+            {
+                entries = entries.Where(x => x.InstanceId == instanceID);
+                entries = entries.Where(x => x.Source == filterSourceToolStripTextBox.Text.ToString());
+            }
 
             var entriesQuery = entries.Select(x => new
             {
@@ -214,6 +221,9 @@ namespace Integrated_Threat_Hunting_Tool
                 EventLog log = new EventLog(filterType);
                 var entries = log.Entries.Cast<EventLogEntry>();
                 var entriesQuery = entries.Select(x => new { x.Source }).ToList();
+                //Remove current values and add a blank value to the source filter dropdownlist
+                filterSourceToolStripTextBox.Items.Clear();
+                filterSourceToolStripTextBox.Items.Add("");
                 //Iterate through the type of entry logs and gather the sources available and add them to the dropdown list 
                 foreach (var item in entriesQuery)
                 {
@@ -292,6 +302,8 @@ namespace Integrated_Threat_Hunting_Tool
                     dataGridView1.DataSource = null;
                     dataGridView1.Refresh();
                     toolStripStatusLabel.Text = "";
+                    filterSourceToolStripTextBox.SelectedIndex = 0;
+                    filterInstanceIDToolStripTextBox.Text = "";
                 }
             }  
         }
@@ -315,7 +327,7 @@ namespace Integrated_Threat_Hunting_Tool
                 }
             }
         }
-
+        
         private void timer1_Tick(object sender, EventArgs e)
         {
             //Display the time with seconds in the toolStrip for convenience
