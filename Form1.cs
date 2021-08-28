@@ -191,6 +191,7 @@ namespace Integrated_Threat_Hunting_Tool
             MessageBox.Show(entriesQuery.Count + " log(s) have loaded.", "Filter Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             //Add retrieved entries to DataGridView
             dataGridView1.DataSource = table;
+            dataGridView1.Sort(this.dataGridView1.Columns["Time"], ListSortDirection.Descending);
             //Clear progress bar and show number of logs
             toolStripStatusLabel.Text = entriesQuery.Count + " Log(s) Loaded";
             toolStripProgressBar.Value = 1;   
@@ -228,12 +229,14 @@ namespace Integrated_Threat_Hunting_Tool
                 foreach (var item in entriesQuery)
                 {
                     //If the source does not exist in the dropdownlist already then add it to the list
+                    //TODO: Messagebox with progress (Generating results auto close)
+                    //TODO: Security type hard code the sources (only 2 sources)
                     if (!filterSourceToolStripTextBox.Items.Contains(item.Source.ToString()))
                     {
                         filterSourceToolStripTextBox.Items.Add(item.Source.ToString());
                     }
                 }
-            } 
+            }
         }
                               
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
