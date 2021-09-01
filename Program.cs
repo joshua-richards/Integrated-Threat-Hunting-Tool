@@ -18,7 +18,7 @@ namespace Integrated_Threat_Hunting_Tool
             Application.SetCompatibleTextRenderingDefault(false);
             try
             {
-                Application.Run(new Form1());
+                Application.Run(new MainForm());
             }
             catch (Exception)
             {
