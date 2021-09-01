@@ -16,7 +16,15 @@ namespace Integrated_Threat_Hunting_Tool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            try
+            {
+                Application.Run(new Form1());
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Administrative privilage is required to access 'Security' event logs\n\nPlease restart the application by right-clicking and selecting 'Run as Administrator'.", "Administrative privilages", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Windows.Forms.Application.Exit();              
+            }
         }
     }
 }

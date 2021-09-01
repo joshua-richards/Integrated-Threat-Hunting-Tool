@@ -347,5 +347,12 @@ namespace Integrated_Threat_Hunting_Tool
                 getSources(filterType);
             }
         }
+
+        private void clearAllParametersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            filterTypeToolStripTextBox.SelectedIndex = 0;
+            filterSourceToolStripTextBox.SelectedIndex = 0;
+            filterInstanceIDToolStripTextBox.Text = "";
+        }
     }
 }

@@ -246,6 +246,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.clearAllParametersToolStripMenuItem.Name = "clearAllParametersToolStripMenuItem";
             this.clearAllParametersToolStripMenuItem.Size = new System.Drawing.Size(225, 26);
             this.clearAllParametersToolStripMenuItem.Text = "Clear All Parameters";
+            this.clearAllParametersToolStripMenuItem.Click += new System.EventHandler(this.clearAllParametersToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
