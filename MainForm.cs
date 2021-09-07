@@ -285,8 +285,16 @@ namespace Integrated_Threat_Hunting_Tool
 
         private void getSources(string filterType)
         {
-            //TODO: Ensure that Sysmon is handled correctly (if statement needed)
-            if (filterType != "Sysmon")
+            //Adds the sources from the event log to the combobox available for selection
+            if (filterType == "Security")
+            {
+                //Two security sources are hard coded as there are only ever 2 sources.
+                //This speeds up the process by preventing unnecessary iteration through the event logs to check for them.
+                filterSourceToolStripTextBox.Items.Add("");
+                filterSourceToolStripTextBox.Items.Add("Microsoft-Windows-Eventlog");
+                filterSourceToolStripTextBox.Items.Add("Microsoft-Windows-Security-Auditing");
+            }
+            else if (filterType != "Sysmon")
             {
                 EventLog log = new EventLog(filterType);
                 var entries = log.Entries.Cast<EventLogEntry>();
@@ -298,7 +306,6 @@ namespace Integrated_Threat_Hunting_Tool
                 foreach (var item in entriesQuery)
                 {
                     //If the source does not exist in the dropdownlist already then add it to the list
-                    //TODO: Security type hard code the sources (only 2 sources)
                     if (!filterSourceToolStripTextBox.Items.Contains(item.Source.ToString()))
                     {
                         filterSourceToolStripTextBox.Items.Add(item.Source.ToString());
@@ -404,6 +411,14 @@ namespace Integrated_Threat_Hunting_Tool
                 {
                     var sourceIndex = filterSourceToolStripTextBox.Items.IndexOf(dataGridView1.CurrentCell.Value.ToString());
                     filterSourceToolStripTextBox.SelectedIndex = sourceIndex;
+                }
+            }
+            else if (dataGridView1.CurrentCell.ColumnIndex.Equals(0) && e.RowIndex != -1)
+            {
+                if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null && filterTypeToolStripTextBox.SelectedIndex == 3)
+                {
+                    //TODO: Open new form with Sysmon information displayed to user.
+
                 }
             }
         }
