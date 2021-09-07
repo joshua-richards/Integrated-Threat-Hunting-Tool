@@ -83,6 +83,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.sysmonEventIDsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -205,19 +206,19 @@ namespace Integrated_Threat_Hunting_Tool
             // panel1ToolStripMenuItem
             // 
             this.panel1ToolStripMenuItem.Name = "panel1ToolStripMenuItem";
-            this.panel1ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.panel1ToolStripMenuItem.Size = new System.Drawing.Size(139, 26);
             this.panel1ToolStripMenuItem.Text = "Panel 1";
             // 
             // panel2ToolStripMenuItem
             // 
             this.panel2ToolStripMenuItem.Name = "panel2ToolStripMenuItem";
-            this.panel2ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.panel2ToolStripMenuItem.Size = new System.Drawing.Size(139, 26);
             this.panel2ToolStripMenuItem.Text = "Panel 2";
             // 
             // panel3ToolStripMenuItem
             // 
             this.panel3ToolStripMenuItem.Name = "panel3ToolStripMenuItem";
-            this.panel3ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.panel3ToolStripMenuItem.Size = new System.Drawing.Size(139, 26);
             this.panel3ToolStripMenuItem.Text = "Panel 3";
             // 
             // toolStripSeparator4
@@ -285,6 +286,8 @@ namespace Integrated_Threat_Hunting_Tool
             // 
             // guideToolStripMenuItem
             // 
+            this.guideToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sysmonEventIDsToolStripMenuItem});
             this.guideToolStripMenuItem.Name = "guideToolStripMenuItem";
             this.guideToolStripMenuItem.Size = new System.Drawing.Size(235, 26);
             this.guideToolStripMenuItem.Text = "Guide";
@@ -536,6 +539,13 @@ namespace Integrated_Threat_Hunting_Tool
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // sysmonEventIDsToolStripMenuItem
+            // 
+            this.sysmonEventIDsToolStripMenuItem.Name = "sysmonEventIDsToolStripMenuItem";
+            this.sysmonEventIDsToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.sysmonEventIDsToolStripMenuItem.Text = "Sysmon Event IDs";
+            this.sysmonEventIDsToolStripMenuItem.Click += new System.EventHandler(this.sysmonEventIDsToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -622,6 +632,7 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.ToolStripLabel sourceToolStripLabel;
         private System.Windows.Forms.ToolStripLabel datetimeToolStripLabel;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.ToolStripMenuItem sysmonEventIDsToolStripMenuItem;
     }
 }
 

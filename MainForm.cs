@@ -446,5 +446,21 @@ namespace Integrated_Threat_Hunting_Tool
             filterSourceToolStripTextBox.SelectedIndex = 0;
             filterInstanceIDToolStripTextBox.Text = "";
         }
+
+        private void sysmonEventIDsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string msg = "Sysmon Event IDs:\n\n1 - Process Creation\n2 - A process changed a file creation time" +
+                "\n3 - Network connection\n4 - Sysmon service state changed\n5 - Process terminated" +
+                "\n6 - Driver loaded\n7 - Image loaded\n8 - CreateRemoteThread\n9 - RawAccessRead" +
+                "\n10 - ProcessAccess\n11 - FileCreate\n12 - RegistryEvent (Object create and delete)" +
+                "\n13 - RegistryEvent (Value Set)\n14 - RegistryEvent (Key and Value Rename)" +
+                "\n15 - FileCreateStreamHash\n16 - ServiceConfigurationChange\n17 - PipeEvent (Pipe Created)" +
+                "\n18 - PipeEvent (Pipe Connected)\n19 - WmiEvent (WmiEventFilter activity detected)" +
+                "\n20 - WmiEvent (WmiEventConsumer activity detected)\n21 - WmiEvent (WmiEventConsumerToFilter activity detected)" +
+                "\n22 - DNSEvent (DNS query)\n23 - FileDelete (File Delete archived)\n24 ClipboardChange (New content in the clipboard)" +
+                "\n25 - ProcessTampering (Process image change)\n26 - FileDeleteDetected (File Delete logged)" +
+                "\n255 - Error";
+            MessageBox.Show(msg, "Guide - Sysmon Event IDs");
+        }
     }
 }
