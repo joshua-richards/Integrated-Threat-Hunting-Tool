@@ -47,8 +47,6 @@ namespace Integrated_Threat_Hunting_Tool
             this.panel1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.panel4ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.panel5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.clearAllParametersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -199,9 +197,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.openNewWindowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.panel1ToolStripMenuItem,
             this.panel2ToolStripMenuItem,
-            this.panel3ToolStripMenuItem,
-            this.panel4ToolStripMenuItem,
-            this.panel5ToolStripMenuItem});
+            this.panel3ToolStripMenuItem});
             this.openNewWindowToolStripMenuItem.Name = "openNewWindowToolStripMenuItem";
             this.openNewWindowToolStripMenuItem.Size = new System.Drawing.Size(225, 26);
             this.openNewWindowToolStripMenuItem.Text = "Open New Window";
@@ -209,32 +205,20 @@ namespace Integrated_Threat_Hunting_Tool
             // panel1ToolStripMenuItem
             // 
             this.panel1ToolStripMenuItem.Name = "panel1ToolStripMenuItem";
-            this.panel1ToolStripMenuItem.Size = new System.Drawing.Size(139, 26);
+            this.panel1ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.panel1ToolStripMenuItem.Text = "Panel 1";
             // 
             // panel2ToolStripMenuItem
             // 
             this.panel2ToolStripMenuItem.Name = "panel2ToolStripMenuItem";
-            this.panel2ToolStripMenuItem.Size = new System.Drawing.Size(139, 26);
+            this.panel2ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.panel2ToolStripMenuItem.Text = "Panel 2";
             // 
             // panel3ToolStripMenuItem
             // 
             this.panel3ToolStripMenuItem.Name = "panel3ToolStripMenuItem";
-            this.panel3ToolStripMenuItem.Size = new System.Drawing.Size(139, 26);
+            this.panel3ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.panel3ToolStripMenuItem.Text = "Panel 3";
-            // 
-            // panel4ToolStripMenuItem
-            // 
-            this.panel4ToolStripMenuItem.Name = "panel4ToolStripMenuItem";
-            this.panel4ToolStripMenuItem.Size = new System.Drawing.Size(139, 26);
-            this.panel4ToolStripMenuItem.Text = "Panel 4";
-            // 
-            // panel5ToolStripMenuItem
-            // 
-            this.panel5ToolStripMenuItem.Name = "panel5ToolStripMenuItem";
-            this.panel5ToolStripMenuItem.Size = new System.Drawing.Size(139, 26);
-            this.panel5ToolStripMenuItem.Text = "Panel 5";
             // 
             // toolStripSeparator4
             // 
@@ -552,7 +536,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -565,7 +549,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(1042, 753);
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Integrated Threat Hunting Tool";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_Closing);
@@ -598,8 +582,6 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.ToolStripMenuItem panel1ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem panel2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem panel3ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem panel4ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem panel5ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem maximiseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem minimiseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem windowedToolStripMenuItem;

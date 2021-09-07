@@ -17,10 +17,6 @@ namespace Integrated_Threat_Hunting_Tool
         public MainForm()
         {
             InitializeComponent();
-            //Initalise BackgroundWorker to do the Event Log gathering
-            backgroundWorker1.DoWork += backgroundWorker1_DoWork;
-            backgroundWorker1.ProgressChanged += backgroundWorker1_ProgressChanged;
-            backgroundWorker1.WorkerReportsProgress = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -44,35 +40,12 @@ namespace Integrated_Threat_Hunting_Tool
             }
         }
         
-        private void readEventLog()
+        private void readEventLog(string filterType)
         {
             //Set event log variables to retrieve
-            //Security, 4624
-            //Application, 1001
-            //TODO: ADD CONDITION TO FETCH SYSMON, Convert 'Sysmon' combo to full length directory in Event Viewer to work properly.
-            //Add this to another method/function instead of this one because it's getting too clutered and won't flow well.
-            string filterType;
             int instanceID = 0;
             bool instanceIDFilterIsNull = false;
-
-            if (string.IsNullOrEmpty(filterTypeToolStripTextBox.Text))
-            {
-                MessageBox.Show("Please select a filter from the dropdown list", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            else if (filterTypeToolStripTextBox.Text == "Sysmon")
-            {
-                //TODO: Implement Sysmon EventLog here (will have to use EventLogQuery/Reader instead of standard approach)
-                MessageBox.Show("Sysmon not yet implemented.", "Sysmon");
-                filterType = "Sysmon";
-                return;
-            }
-            else
-            {
-                //Selects filter value from dropdown list
-                filterType = filterTypeToolStripTextBox.Text;
-            }
-
+         
             //Verifies that the instanceID value entered by the user is a valid number
             if (string.IsNullOrEmpty(filterInstanceIDToolStripTextBox.Text) && filterSourceToolStripTextBox.SelectedIndex >= 1)
             {
@@ -125,7 +98,7 @@ namespace Integrated_Threat_Hunting_Tool
                 entries = entries.Where(x => x.InstanceId == instanceID);
                 entries = entries.Where(x => x.Source == filterSourceToolStripTextBox.Text.ToString());
             }
-
+            
             var entriesQuery = entries.Select(x => new
             {
                 x.MachineName,
@@ -197,21 +170,117 @@ namespace Integrated_Threat_Hunting_Tool
             toolStripProgressBar.Value = 1;   
         }
 
-        //Background worker is used in order to populate the DataGridView using another thread in the background
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        private void readSysmonEventLog(string filterType)
         {
-            //TODO: Add here the iteration used in the for each loop of the readEventLog method
+            //Set event log variables to retrieve (UNSET BELOW VARIABLES BEFORE CONTINUE)
+            int instanceID = 0;
+            bool instanceIDFilterIsNull = false;
+            
+            //Verifies that the instanceID value entered by the user is a valid number (Source not used for SYSMON, SO NO CHECK REQD)
+            if (string.IsNullOrEmpty(filterInstanceIDToolStripTextBox.Text))
+            {
+                //Use filter is null bool for determining which EventLog class to use below (if/else)
+                instanceIDFilterIsNull = true;
+                if (MessageBox.Show("Retrieving all event logs.\n\nAre you sure you wish to continue?", "This process may take a while", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.Cancel)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                try
+                {
+                    instanceID = Int32.Parse(filterInstanceIDToolStripTextBox.Text);
+                    instanceIDFilterIsNull = false;
+                }
+                catch (Exception)
+                {
+                    //Throw an error message if the instanceID cannot be parsed to a string.
+                    if (MessageBox.Show("The Instance/Event ID is incorrect. Please enter a valid number.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error) == DialogResult.OK)
+                    {
+                        return;
+                    }
+                    throw;
+                }
+            }
+
+            //TODO: ADD CHECK FOR SYSMON EVENT ID
+            string sysmonQueryEventID = "*[System/EventID=" + instanceID + "]";
+            EventLogQuery sysmonQuery = new EventLogQuery("Microsoft-Windows-Sysmon/Operational", PathType.LogName, "*");
+            if (!instanceIDFilterIsNull)
+            {
+                sysmonQuery = new EventLogQuery("Microsoft-Windows-Sysmon/Operational", PathType.LogName, sysmonQueryEventID);
+            }
+
+            //Declare SYSMON eventRecord for use
+            //Gets sysmonQuery from previous if statement based on whether ID is null or not in the textbox
+            EventLogReader sysmonReader = new EventLogReader(sysmonQuery);
+            EventRecord eventRecord;
+
+            //TODO: Progress bar parameters
+            //toolStripProgressBar.Minimum = 1;
+            //toolStripProgressBar.Maximum = eventRecord.Count;
+            //toolStripProgressBar.Step = 1;
+
+            //Create table object and table columns for SYSMON logs
+            DataTable table = new DataTable();
+            table.Columns.Add("Log No", typeof(int));
+            table.Columns.Add("Time", typeof(string));
+            table.Columns.Add("Instance/Event ID", typeof(string));
+            //table.Columns.Add("Task Category", typeof(string));
+            table.Columns.Add("PC Name", typeof(string));
+
+            if ((eventRecord = sysmonReader.ReadEvent()) != null)
+            {
+                toolStripProgressBar.Value = 1;
+            }
+            else
+            {
+                MessageBox.Show("The Instance/Event ID " + instanceID + " does not exist for this source\n\nPlease select another filter or valid ID", "Incorrect Instance/Event ID", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int logNumber = 1;
+            while ((eventRecord = sysmonReader.ReadEvent()) != null )
+            {
+                toolStripProgressBar.PerformStep();
+                table.Rows.Add(
+                    logNumber,
+                    eventRecord.TimeCreated.ToString(),
+                    eventRecord.Id.ToString(),
+                    //eventRecord.TaskDisplayName.ToString(),
+                    eventRecord.MachineName.ToString());
+                logNumber++;
+                /* Some instanceIDs take a long time to load and give the "ContextSwitchDeadlock" exception.
+                 * The code below prevents the program from crashing and throwing the exception.
+                 */
+                System.Threading.Thread.CurrentThread.Join(0);
+            }
+
+            //Show message with number of logs found
+            MessageBox.Show(logNumber-1 + " log(s) have loaded.", "Filter Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //Add retrieved entries to DataGridView
+            MessageBox.Show("Adding logs to table");
+            dataGridView1.DataSource = table;
+            dataGridView1.Sort(this.dataGridView1.Columns["Time"], ListSortDirection.Descending);
+            //Clear progress bar and show number of logs
+            toolStripStatusLabel.Text = logNumber-1 + " Log(s) Loaded";
+            toolStripProgressBar.Value = 0;
         }
 
-        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void readEventLogHandler(string filterType)
         {
-            toolStripProgressBar.Value = e.ProgressPercentage;
-        }
-
-        private void readEventLogHandler()
-        {
-            //TODO: This code should check whether the filter is standard or Sysmon source and determine which EventLog class 
-            //should be used.
+            /*This code should check whether the filter is standard or Sysmon source and determine which EventLog method 
+             *should be used.
+            */
+            if (filterType == "Sysmon")
+            {
+                readSysmonEventLog(filterType);
+            }
+            else
+            {
+                readEventLog(filterType);
+            }
         }
 
         private void getSources(string filterType)
@@ -229,7 +298,6 @@ namespace Integrated_Threat_Hunting_Tool
                 foreach (var item in entriesQuery)
                 {
                     //If the source does not exist in the dropdownlist already then add it to the list
-                    //TODO: Messagebox with progress (Generating results auto close)
                     //TODO: Security type hard code the sources (only 2 sources)
                     if (!filterSourceToolStripTextBox.Items.Contains(item.Source.ToString()))
                     {
@@ -292,8 +360,17 @@ namespace Integrated_Threat_Hunting_Tool
         }
 
         private void filterToolStripButton_Click(object sender, EventArgs e)
-        {
-            readEventLog();
+        { 
+            if (string.IsNullOrEmpty(filterTypeToolStripTextBox.Text))
+            {
+                MessageBox.Show("Please select a filter from the dropdown list", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            else
+            {
+                var filterType = filterTypeToolStripTextBox.SelectedItem.ToString();
+                readEventLogHandler(filterType);
+            }
         }
 
         private void toolStripClearResultsButton_Click(object sender, EventArgs e)
@@ -305,7 +382,7 @@ namespace Integrated_Threat_Hunting_Tool
                     dataGridView1.DataSource = null;
                     dataGridView1.Refresh();
                     toolStripStatusLabel.Text = "";
-                    filterSourceToolStripTextBox.SelectedIndex = 0;
+                    filterSourceToolStripTextBox.SelectedIndex = -1;
                     filterInstanceIDToolStripTextBox.Text = "";
                 }
             }  
