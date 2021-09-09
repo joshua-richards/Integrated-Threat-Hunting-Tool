@@ -19,12 +19,14 @@ namespace Integrated_Threat_Hunting_Tool
             InitializeComponent();
         }
 
+        //Initialise the List used to display messages if the user double clicks on log number
+        List<string> logMessages = new List<string>();
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Before using this software you must accept the terms and conditions.\n\nDo you accept the T&Cs?\n\nNote: Please run this program with Administrative privilages in order to retrieve all logs.", "Integrated Threat Hunting Tool - Agreement", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.No)
-            {
-                System.Windows.Forms.Application.Exit();
-            }
+            MessageBox.Show("Instructions on how to use this application are in the 'Help' section of the menu bar." +
+                "\n\nNote: Run this application with Administrative privilages in order to retrieve all logs.",
+                "Integrated Threat Hunting Tool - Welcome", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             //Itilialise Form1 labels
             systemInfoMachineLabel.Text = "PC Name: " + Environment.MachineName;
             systemInfoOSLabel.Text = "Windows Version: " + Environment.OSVersion;
@@ -138,11 +140,9 @@ namespace Integrated_Threat_Hunting_Tool
             table.Columns.Add("Source", typeof(string));
             table.Columns.Add("PC Name", typeof(string));
 
-            //TODO: Add this to BackgroundWorker in order to run on another thread whilst also keeping the UI + Progress bar running
             int logNumber = 1;
             foreach (var item in entriesQuery)
             {
-                //TODO: Change this to the new background worker step, does not need to be added here, can be done in seperate BW method
                 toolStripProgressBar.PerformStep();
                 //Add Rows to the DataGridView based on retrieved log entries
                 table.Rows.Add(
@@ -153,13 +153,15 @@ namespace Integrated_Threat_Hunting_Tool
                     item.Source.ToString(),
                     item.MachineName.ToString()
                     );
+                //Add Information to the list for use in viewing the message by double clicking on log number
+                logMessages.Add(item.Message.ToString());
                 logNumber++;
                 /* Some instanceIDs take a long time to load and give the "ContextSwitchDeadlock" exception.
                  * The code below prevents the program from crashing and throwing the exception.
                  */
                 System.Threading.Thread.CurrentThread.Join(0);
             }
-
+                        
             //Show message with number of logs found
             MessageBox.Show(entriesQuery.Count + " log(s) have loaded.", "Filter Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             //Add retrieved entries to DataGridView
@@ -204,7 +206,8 @@ namespace Integrated_Threat_Hunting_Tool
                 }
             }
 
-            //TODO: ADD CHECK FOR SYSMON EVENT ID
+            //https://docs.microsoft.com/en-us/previous-versions/bb399427(v=vs.90)?redirectedfrom=MSDN
+            //Creates the Sysmon event query whether there is an instance ID or not
             string sysmonQueryEventID = "*[System/EventID=" + instanceID + "]";
             EventLogQuery sysmonQuery = new EventLogQuery("Microsoft-Windows-Sysmon/Operational", PathType.LogName, "*");
             if (!instanceIDFilterIsNull)
@@ -216,11 +219,6 @@ namespace Integrated_Threat_Hunting_Tool
             //Gets sysmonQuery from previous if statement based on whether ID is null or not in the textbox
             EventLogReader sysmonReader = new EventLogReader(sysmonQuery);
             EventRecord eventRecord;
-
-            //TODO: Progress bar parameters
-            //toolStripProgressBar.Minimum = 1;
-            //toolStripProgressBar.Maximum = eventRecord.Count;
-            //toolStripProgressBar.Step = 1;
 
             //Create table object and table columns for SYSMON logs
             DataTable table = new DataTable();
@@ -244,6 +242,17 @@ namespace Integrated_Threat_Hunting_Tool
             while ((eventRecord = sysmonReader.ReadEvent()) != null )
             {
                 toolStripProgressBar.PerformStep();
+                try
+                {
+                    //logMessages.Add(eventRecord.FormatDescription());
+                    logMessages.Add(eventRecord.TimeCreated.ToString());
+                }
+                catch (Exception)
+                {
+                    logMessages.Add("No Information Available");
+                    //MessageBox.Show(logNumber.ToString());
+                    continue;
+                }
                 table.Rows.Add(
                     logNumber,
                     eventRecord.TimeCreated.ToString(),
@@ -260,7 +269,7 @@ namespace Integrated_Threat_Hunting_Tool
             //Show message with number of logs found
             MessageBox.Show(logNumber-1 + " log(s) have loaded.", "Filter Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             //Add retrieved entries to DataGridView
-            MessageBox.Show("Adding logs to table");
+            MessageBox.Show("Adding logs to table\n\nThis may take a few moments.\nGrab a cup of coffee while you wait!");
             dataGridView1.DataSource = table;
             dataGridView1.Sort(this.dataGridView1.Columns["Time"], ListSortDirection.Descending);
             //Clear progress bar and show number of logs
@@ -290,9 +299,14 @@ namespace Integrated_Threat_Hunting_Tool
             {
                 //Two security sources are hard coded as there are only ever 2 sources.
                 //This speeds up the process by preventing unnecessary iteration through the event logs to check for them.
+                filterSourceToolStripTextBox.Items.Clear();
                 filterSourceToolStripTextBox.Items.Add("");
-                filterSourceToolStripTextBox.Items.Add("Microsoft-Windows-Eventlog");
-                filterSourceToolStripTextBox.Items.Add("Microsoft-Windows-Security-Auditing");
+                if (!filterSourceToolStripTextBox.Items.Contains("Microsoft-Windows-Eventlog") &&
+                    !filterSourceToolStripTextBox.Items.Contains("Microsoft-Windows-Security-Auditing"))
+                {
+                    filterSourceToolStripTextBox.Items.Add("Microsoft-Windows-Eventlog");
+                    filterSourceToolStripTextBox.Items.Add("Microsoft-Windows-Security-Auditing");
+                }
             }
             else if (filterType != "Sysmon")
             {
@@ -311,6 +325,12 @@ namespace Integrated_Threat_Hunting_Tool
                         filterSourceToolStripTextBox.Items.Add(item.Source.ToString());
                     }
                 }
+            }
+            else if (filterType == "Sysmon")
+            {
+                //Sysmon has no sources, as such, combobox is blank
+                filterSourceToolStripTextBox.Items.Clear();
+                filterSourceToolStripTextBox.Items.Add("");
             }
         }
                               
@@ -376,6 +396,7 @@ namespace Integrated_Threat_Hunting_Tool
             else
             {
                 var filterType = filterTypeToolStripTextBox.SelectedItem.ToString();
+                logMessages.Clear();
                 readEventLogHandler(filterType);
             }
         }
@@ -391,6 +412,8 @@ namespace Integrated_Threat_Hunting_Tool
                     toolStripStatusLabel.Text = "";
                     filterSourceToolStripTextBox.SelectedIndex = -1;
                     filterInstanceIDToolStripTextBox.Text = "";
+                    //Clear the Message list that's used to view message of event
+                    logMessages.Clear();
                 }
             }  
         }
@@ -415,10 +438,10 @@ namespace Integrated_Threat_Hunting_Tool
             }
             else if (dataGridView1.CurrentCell.ColumnIndex.Equals(0) && e.RowIndex != -1)
             {
-                if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null && filterTypeToolStripTextBox.SelectedIndex == 3)
+                if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
                 {
-                    //TODO: Open new form with Sysmon information displayed to user.
-
+                    int logIndex = Convert.ToInt32(dataGridView1.CurrentCell.Value) - 1;
+                    MessageBox.Show(logMessages[logIndex]);
                 }
             }
         }
@@ -449,7 +472,8 @@ namespace Integrated_Threat_Hunting_Tool
 
         private void sysmonEventIDsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string msg = "Sysmon Event IDs:\n\n1 - Process Creation\n2 - A process changed a file creation time" +
+            string msg = "The following Event IDs can be used in the application filter textbox." +
+                "\n\nSysmon Event IDs:\n1 - Process Creation\n2 - A process changed a file creation time" +
                 "\n3 - Network connection\n4 - Sysmon service state changed\n5 - Process terminated" +
                 "\n6 - Driver loaded\n7 - Image loaded\n8 - CreateRemoteThread\n9 - RawAccessRead" +
                 "\n10 - ProcessAccess\n11 - FileCreate\n12 - RegistryEvent (Object create and delete)" +
@@ -459,8 +483,28 @@ namespace Integrated_Threat_Hunting_Tool
                 "\n20 - WmiEvent (WmiEventConsumer activity detected)\n21 - WmiEvent (WmiEventConsumerToFilter activity detected)" +
                 "\n22 - DNSEvent (DNS query)\n23 - FileDelete (File Delete archived)\n24 ClipboardChange (New content in the clipboard)" +
                 "\n25 - ProcessTampering (Process image change)\n26 - FileDeleteDetected (File Delete logged)" +
-                "\n255 - Error";
+                "\n255 - Error" +
+                "\n\nMore information for each event at: https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon#events";
             MessageBox.Show(msg, "Guide - Sysmon Event IDs");
+        }
+
+        private void panel1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Open new Machine Learning Form
+            MachineLearningForm mlForm = new MachineLearningForm();
+            mlForm.ShowDialog();
+        }
+
+        private void gridViewInstructionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string msg = "Here are some things you can do to assist with threat hunting in this application:\n\n" +
+                "- Double-click the 'Log No' field of any row and a pop-up with more log information will appear.\n" +
+                "- Double-click the 'Instance/Event ID' field of any row and it will autopopulate the filter with that ID number.\n" +
+                "- Double-click the 'Source' field of any row and it will autopopulate the filter with that source.\n" +
+                "- Clicking on the field name at the top of the grid will sort by ascending/descending order (Descending by default).\n" +
+                "- The bin icon in the tool strip will clear all logs and filters and prompt you for confirmation beforehand.\n" +
+                "- Some sources may take a while, the application will prompt you if this may be the case.";
+            MessageBox.Show(msg, "Guide - Grid View Instructions");
         }
     }
 }

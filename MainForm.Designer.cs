@@ -45,8 +45,6 @@ namespace Integrated_Threat_Hunting_Tool
             this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openNewWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.panel2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.panel3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.clearAllParametersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -57,7 +55,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.versionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.guideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.termsAndConditionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sysmonEventIDsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -81,9 +79,8 @@ namespace Integrated_Threat_Hunting_Tool
             this.systemInfoUserNameLabel = new System.Windows.Forms.Label();
             this.systemInfoOSLabel = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.sysmonEventIDsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gridViewInstructionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -196,9 +193,7 @@ namespace Integrated_Threat_Hunting_Tool
             // openNewWindowToolStripMenuItem
             // 
             this.openNewWindowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.panel1ToolStripMenuItem,
-            this.panel2ToolStripMenuItem,
-            this.panel3ToolStripMenuItem});
+            this.panel1ToolStripMenuItem});
             this.openNewWindowToolStripMenuItem.Name = "openNewWindowToolStripMenuItem";
             this.openNewWindowToolStripMenuItem.Size = new System.Drawing.Size(225, 26);
             this.openNewWindowToolStripMenuItem.Text = "Open New Window";
@@ -206,20 +201,9 @@ namespace Integrated_Threat_Hunting_Tool
             // panel1ToolStripMenuItem
             // 
             this.panel1ToolStripMenuItem.Name = "panel1ToolStripMenuItem";
-            this.panel1ToolStripMenuItem.Size = new System.Drawing.Size(139, 26);
-            this.panel1ToolStripMenuItem.Text = "Panel 1";
-            // 
-            // panel2ToolStripMenuItem
-            // 
-            this.panel2ToolStripMenuItem.Name = "panel2ToolStripMenuItem";
-            this.panel2ToolStripMenuItem.Size = new System.Drawing.Size(139, 26);
-            this.panel2ToolStripMenuItem.Text = "Panel 2";
-            // 
-            // panel3ToolStripMenuItem
-            // 
-            this.panel3ToolStripMenuItem.Name = "panel3ToolStripMenuItem";
-            this.panel3ToolStripMenuItem.Size = new System.Drawing.Size(139, 26);
-            this.panel3ToolStripMenuItem.Text = "Panel 3";
+            this.panel1ToolStripMenuItem.Size = new System.Drawing.Size(209, 26);
+            this.panel1ToolStripMenuItem.Text = "Machine Learning";
+            this.panel1ToolStripMenuItem.Click += new System.EventHandler(this.panel1ToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -264,8 +248,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem,
             this.versionToolStripMenuItem,
-            this.guideToolStripMenuItem,
-            this.termsAndConditionsToolStripMenuItem});
+            this.guideToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(55, 24);
             this.helpToolStripMenuItem.Text = "Help";
@@ -273,30 +256,32 @@ namespace Integrated_Threat_Hunting_Tool
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(235, 26);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // versionToolStripMenuItem
             // 
             this.versionToolStripMenuItem.Name = "versionToolStripMenuItem";
-            this.versionToolStripMenuItem.Size = new System.Drawing.Size(235, 26);
+            this.versionToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.versionToolStripMenuItem.Text = "Version";
             this.versionToolStripMenuItem.Click += new System.EventHandler(this.versionToolStripMenuItem_Click);
             // 
             // guideToolStripMenuItem
             // 
             this.guideToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.sysmonEventIDsToolStripMenuItem});
+            this.sysmonEventIDsToolStripMenuItem,
+            this.gridViewInstructionsToolStripMenuItem});
             this.guideToolStripMenuItem.Name = "guideToolStripMenuItem";
-            this.guideToolStripMenuItem.Size = new System.Drawing.Size(235, 26);
-            this.guideToolStripMenuItem.Text = "Guide";
+            this.guideToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.guideToolStripMenuItem.Text = "How to Use Guide";
             // 
-            // termsAndConditionsToolStripMenuItem
+            // sysmonEventIDsToolStripMenuItem
             // 
-            this.termsAndConditionsToolStripMenuItem.Name = "termsAndConditionsToolStripMenuItem";
-            this.termsAndConditionsToolStripMenuItem.Size = new System.Drawing.Size(235, 26);
-            this.termsAndConditionsToolStripMenuItem.Text = "Terms and Conditions";
+            this.sysmonEventIDsToolStripMenuItem.Name = "sysmonEventIDsToolStripMenuItem";
+            this.sysmonEventIDsToolStripMenuItem.Size = new System.Drawing.Size(235, 26);
+            this.sysmonEventIDsToolStripMenuItem.Text = "Sysmon Event IDs";
+            this.sysmonEventIDsToolStripMenuItem.Click += new System.EventHandler(this.sysmonEventIDsToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -539,12 +524,12 @@ namespace Integrated_Threat_Hunting_Tool
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // sysmonEventIDsToolStripMenuItem
+            // gridViewInstructionsToolStripMenuItem
             // 
-            this.sysmonEventIDsToolStripMenuItem.Name = "sysmonEventIDsToolStripMenuItem";
-            this.sysmonEventIDsToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.sysmonEventIDsToolStripMenuItem.Text = "Sysmon Event IDs";
-            this.sysmonEventIDsToolStripMenuItem.Click += new System.EventHandler(this.sysmonEventIDsToolStripMenuItem_Click);
+            this.gridViewInstructionsToolStripMenuItem.Name = "gridViewInstructionsToolStripMenuItem";
+            this.gridViewInstructionsToolStripMenuItem.Size = new System.Drawing.Size(235, 26);
+            this.gridViewInstructionsToolStripMenuItem.Text = "Grid View Instructions";
+            this.gridViewInstructionsToolStripMenuItem.Click += new System.EventHandler(this.gridViewInstructionsToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -590,8 +575,6 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openNewWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem panel1ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem panel2ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem panel3ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem maximiseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem minimiseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem windowedToolStripMenuItem;
@@ -619,10 +602,8 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.ToolStripComboBox filterTypeToolStripTextBox;
         private System.Windows.Forms.ToolStripButton toolStripClearResultsButton;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
-        private System.Windows.Forms.ToolStripMenuItem termsAndConditionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox filterInstanceIDToolStripTextBox;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ToolStripLabel instanceIDToolStripLabel;
         private System.Windows.Forms.ToolStripLabel typeToolStripLabel;
         private System.Windows.Forms.ToolStripButton windowsPerformanceMonitorButton;
@@ -633,6 +614,7 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.ToolStripLabel datetimeToolStripLabel;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ToolStripMenuItem sysmonEventIDsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gridViewInstructionsToolStripMenuItem;
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.ML;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,9 +24,10 @@ namespace Integrated_Threat_Hunting_Tool
             //}
             //catch (Exception)
             //{
-            //    MessageBox.Show("Administrative privilage is required to access 'Security' event logs\n\nPlease restart the application by right-clicking and selecting 'Run as Administrator'.", "Administrative privilages", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    System.Windows.Forms.Application.Exit();              
+            //    MessageBox.Show("Administrative privilage is required to access these event logs\n\nPlease restart the application by right-clicking and selecting 'Run as Administrator'.", "Administrative privilages", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    System.Windows.Forms.Application.Exit();
             //}
         }
+
     }
 }
