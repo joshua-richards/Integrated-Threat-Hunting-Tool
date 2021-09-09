@@ -39,7 +39,7 @@ namespace Integrated_Threat_Hunting_Tool
             return mLContext.Data.LoadFromEnumerable(enumerableData);
         }
 
-        private void DetectSpike(MLContext mlContext, int docSize, IDataView sysmonResults)
+        private void DetectSpike(MLContext mlContext, int docSize, IDataView sysmonResults, List<string> timeColumn)
         {
             var iidSpikeEstimator = mlContext.Transforms.DetectIidSpike(outputColumnName: nameof(SysmonPrediction.Prediction),
                 inputColumnName: nameof(SysmonData.EventId), confidence: 95, pvalueHistoryLength: docSize / 4);
@@ -49,21 +49,41 @@ namespace Integrated_Threat_Hunting_Tool
             IDataView transformedData = iidSpikeTransform.Transform(sysmonResults);
             MessageBox.Show("Predicting data");
             var predictions = mlContext.Data.CreateEnumerable<SysmonPrediction>(transformedData, reuseRowObject: false);
-            mlResultTextBox.Text = "Alert\t\t\ttScore\t\t\ttP-Value" + Environment.NewLine;
             toolStripProgressBar.Minimum = 1;
             toolStripProgressBar.Maximum = docSize;
             toolStripProgressBar.Step = 1;
+            //Create Table
+            DataTable table = new DataTable();
+            table.Columns.Add("Log No", typeof(int));
+            table.Columns.Add("Time", typeof(string));
+            table.Columns.Add("Alert", typeof(string));
+            table.Columns.Add("Score (Event ID)", typeof(string));
+            table.Columns.Add("P-Value", typeof(string));
+            table.Columns.Add("Anomaly Detected?", typeof(string));
+            int logNumber = 1;
+            int noOfAnomalies = 0;
             foreach (var p in predictions)
             {
                 toolStripProgressBar.PerformStep();
-                var results = $"{p.Prediction[0]}\t\t\t{p.Prediction[1]:f2}\t\t\t{p.Prediction[2]:F2}";
+                //var results = $"{p.Prediction[0]}\t\t\t{p.Prediction[1]:f2}\t\t\t{p.Prediction[2]:F2}";
                 if (p.Prediction[0] == 1)
                 {
-                    results += " <-- ANOMALY DETECTED (Spike - This log may be a cause for further investigation)";
+                    //TODO: Time value from CSV/property of object.
+                    //TODO: Double click on log brings up more info.
+                    table.Rows.Add(logNumber, timeColumn[logNumber - 1], p.Prediction[0], p.Prediction[1], p.Prediction[2], " <-- ANOMALY DETECTED (Spike - This log may be a cause for further investigation)");
+                    noOfAnomalies++;
+                    //results += " <-- ANOMALY DETECTED (Spike - This log may be a cause for further investigation)";
                 }
-                mlResultTextBox.Text += results + Environment.NewLine;
+                else
+                {
+                    table.Rows.Add(logNumber, timeColumn[logNumber - 1], p.Prediction[0], p.Prediction[1], p.Prediction[2], "");
+                }
+                logNumber++;
+                //mlResultTextBox.Text += results + Environment.NewLine;
             }
-            mlResultTextBox.Text += "- - - END - - -" + Environment.NewLine;
+            //mlResultTextBox.Text += "- - - END - - -" + Environment.NewLine;
+            dataGridView1.DataSource = table;
+            MessageBox.Show("The algorithm found " + noOfAnomalies + " possible anomalies.", "Anomalies found", MessageBoxButtons.OK, MessageBoxIcon.Information);
             toolStripStatusLabel.Text = docSize + " Log(s) Loaded";
             toolStripProgressBar.Value = 1;
         }
@@ -74,10 +94,23 @@ namespace Integrated_Threat_Hunting_Tool
             string _dataPath = getFilePath();
             int _docsize = getCSVSize(_dataPath) - 1;
             MessageBox.Show(_dataPath + "\n\n" + _docsize);
+            //Get Time from CSV for datagridview
+            var timeColumn = new List<string>();
+            using (var fileReader = File.OpenText(_dataPath))
+            using (var csvResult = new CsvHelper.CsvReader(fileReader, System.Globalization.CultureInfo.CurrentCulture))
+            {
+                csvResult.Read();
+                csvResult.ReadHeader();
+                while (csvResult.Read())
+                {
+                    var field = csvResult.GetField<string>("TimeCreated");
+                    timeColumn.Add(field);
+                }
+            }
             //Create MLContext
             MLContext mlContext = new MLContext();
             IDataView dataView = mlContext.Data.LoadFromTextFile<SysmonData>(path: _dataPath, hasHeader: true, separatorChar: ',');
-            DetectSpike(mlContext, _docsize, dataView);
+            DetectSpike(mlContext, _docsize, dataView, timeColumn);
         }
 
         private string getFilePath()
@@ -121,6 +154,36 @@ namespace Integrated_Threat_Hunting_Tool
             //IDataView dataView = mlContext.Data.LoadFromTextFile<SysmonData>(path: _dataPath, hasHeader: true, separatorChar: ',');
             //DetectSpike(mlContext, _docsize, dataView);
         }
+
+        private void sysmonEventIDsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string msg = "The following Event IDs can be used in the application filter textbox." +
+                "\n\nSysmon Event IDs:\n1 - Process Creation\n2 - A process changed a file creation time" +
+                "\n3 - Network connection\n4 - Sysmon service state changed\n5 - Process terminated" +
+                "\n6 - Driver loaded\n7 - Image loaded\n8 - CreateRemoteThread\n9 - RawAccessRead" +
+                "\n10 - ProcessAccess\n11 - FileCreate\n12 - RegistryEvent (Object create and delete)" +
+                "\n13 - RegistryEvent (Value Set)\n14 - RegistryEvent (Key and Value Rename)" +
+                "\n15 - FileCreateStreamHash\n16 - ServiceConfigurationChange\n17 - PipeEvent (Pipe Created)" +
+                "\n18 - PipeEvent (Pipe Connected)\n19 - WmiEvent (WmiEventFilter activity detected)" +
+                "\n20 - WmiEvent (WmiEventConsumer activity detected)\n21 - WmiEvent (WmiEventConsumerToFilter activity detected)" +
+                "\n22 - DNSEvent (DNS query)\n23 - FileDelete (File Delete archived)\n24 ClipboardChange (New content in the clipboard)" +
+                "\n25 - ProcessTampering (Process image change)\n26 - FileDeleteDetected (File Delete logged)" +
+                "\n255 - Error" +
+                "\n\nMore information for each event at: https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon#events";
+            MessageBox.Show(msg, "Guide - Sysmon Event IDs");
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string msg = "The Integrated Threat Hunting Tool was created as part of an MSc project for the University of South Wales by Joshua Richards #17025745.\n\nAll code and subsequent libraries are used under fair use as this tool is not-for-profit and for educational purposes only.";
+            MessageBox.Show(msg, "About");
+        }
+
+        private void versionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string msg = "Version: v0.1\n\nMore information is available on the public GitHub repository.\n\nhttps://github.com/joshua-richards/Integrated-Threat-Hunting-Tool";
+            MessageBox.Show(msg, "Version");
+        }
     }
 
     public class SysmonData
@@ -130,9 +193,9 @@ namespace Integrated_Threat_Hunting_Tool
         //public int RecordNumber;
         //[LoadColumn(1)]
         //public int EventRecordId;
-        [LoadColumn(0)]
+        [LoadColumn(2)]
         public string TimeCreated;
-        [LoadColumn(1)]
+        [LoadColumn(3)]
         public float EventId;
         //[LoadColumn(4)]
         //public int ProcessId;

@@ -33,8 +33,6 @@ namespace Integrated_Threat_Hunting_Tool
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,8 +44,6 @@ namespace Integrated_Threat_Hunting_Tool
             this.panel1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.clearAllParametersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.maximiseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.minimiseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,11 +67,12 @@ namespace Integrated_Threat_Hunting_Tool
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.mlResultTextBox = new System.Windows.Forms.TextBox();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -96,8 +93,6 @@ namespace Integrated_Threat_Hunting_Tool
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
-            this.saveToolStripMenuItem,
-            this.openToolStripMenuItem,
             this.toolStripSeparator2,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -109,18 +104,6 @@ namespace Integrated_Threat_Hunting_Tool
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.Size = new System.Drawing.Size(128, 26);
             this.newToolStripMenuItem.Text = "New";
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(128, 26);
-            this.saveToolStripMenuItem.Text = "Save";
-            // 
-            // openToolStripMenuItem
-            // 
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(128, 26);
-            this.openToolStripMenuItem.Text = "Open";
             // 
             // toolStripSeparator2
             // 
@@ -162,8 +145,6 @@ namespace Integrated_Threat_Hunting_Tool
             this.homeToolStripMenuItem,
             this.openNewWindowToolStripMenuItem,
             this.toolStripSeparator4,
-            this.clearAllParametersToolStripMenuItem,
-            this.toolStripSeparator1,
             this.maximiseToolStripMenuItem,
             this.minimiseToolStripMenuItem,
             this.windowedToolStripMenuItem});
@@ -203,17 +184,6 @@ namespace Integrated_Threat_Hunting_Tool
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(222, 6);
             // 
-            // clearAllParametersToolStripMenuItem
-            // 
-            this.clearAllParametersToolStripMenuItem.Name = "clearAllParametersToolStripMenuItem";
-            this.clearAllParametersToolStripMenuItem.Size = new System.Drawing.Size(225, 26);
-            this.clearAllParametersToolStripMenuItem.Text = "Clear All Parameters";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(222, 6);
-            // 
             // maximiseToolStripMenuItem
             // 
             this.maximiseToolStripMenuItem.Name = "maximiseToolStripMenuItem";
@@ -245,14 +215,16 @@ namespace Integrated_Threat_Hunting_Tool
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(212, 26);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // versionToolStripMenuItem
             // 
             this.versionToolStripMenuItem.Name = "versionToolStripMenuItem";
-            this.versionToolStripMenuItem.Size = new System.Drawing.Size(212, 26);
+            this.versionToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.versionToolStripMenuItem.Text = "Version";
+            this.versionToolStripMenuItem.Click += new System.EventHandler(this.versionToolStripMenuItem_Click);
             // 
             // guideToolStripMenuItem
             // 
@@ -260,19 +232,20 @@ namespace Integrated_Threat_Hunting_Tool
             this.sysmonEventIDsToolStripMenuItem,
             this.evtxECmdToolStripMenuItem});
             this.guideToolStripMenuItem.Name = "guideToolStripMenuItem";
-            this.guideToolStripMenuItem.Size = new System.Drawing.Size(212, 26);
+            this.guideToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.guideToolStripMenuItem.Text = "How to Use Guide";
             // 
             // sysmonEventIDsToolStripMenuItem
             // 
             this.sysmonEventIDsToolStripMenuItem.Name = "sysmonEventIDsToolStripMenuItem";
-            this.sysmonEventIDsToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
+            this.sysmonEventIDsToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.sysmonEventIDsToolStripMenuItem.Text = "Sysmon Event IDs";
+            this.sysmonEventIDsToolStripMenuItem.Click += new System.EventHandler(this.sysmonEventIDsToolStripMenuItem_Click);
             // 
             // evtxECmdToolStripMenuItem
             // 
             this.evtxECmdToolStripMenuItem.Name = "evtxECmdToolStripMenuItem";
-            this.evtxECmdToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
+            this.evtxECmdToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.evtxECmdToolStripMenuItem.Text = "EvtxECmd";
             this.evtxECmdToolStripMenuItem.Click += new System.EventHandler(this.evtxECmdToolStripMenuItem_Click);
             // 
@@ -362,7 +335,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 78);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1000, 159);
+            this.groupBox1.Size = new System.Drawing.Size(1000, 148);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Machine Learning";
@@ -374,7 +347,7 @@ namespace Integrated_Threat_Hunting_Tool
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(9, 125);
+            this.label4.Location = new System.Drawing.Point(9, 116);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(491, 18);
             this.label4.TabIndex = 6;
@@ -421,24 +394,29 @@ namespace Integrated_Threat_Hunting_Tool
             this.label1.Text = "This tool uses anomaly based machine learning to predict malicious activity on th" +
     "e host or network.";
             // 
-            // mlResultTextBox
+            // dataGridView1
             // 
-            this.mlResultTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.mlResultTextBox.Location = new System.Drawing.Point(13, 243);
-            this.mlResultTextBox.Multiline = true;
-            this.mlResultTextBox.Name = "mlResultTextBox";
-            this.mlResultTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.mlResultTextBox.Size = new System.Drawing.Size(999, 434);
-            this.mlResultTextBox.TabIndex = 6;
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(12, 232);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
+            this.dataGridView1.RowHeadersWidth = 51;
+            this.dataGridView1.RowTemplate.Height = 24;
+            this.dataGridView1.Size = new System.Drawing.Size(999, 445);
+            this.dataGridView1.TabIndex = 7;
             // 
             // MachineLearningForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1024, 706);
-            this.Controls.Add(this.mlResultTextBox);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
@@ -456,6 +434,7 @@ namespace Integrated_Threat_Hunting_Tool
             this.statusStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -466,8 +445,6 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
@@ -479,8 +456,6 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.ToolStripMenuItem panel1ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem panel2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripMenuItem clearAllParametersToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem maximiseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem minimiseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem windowedToolStripMenuItem;
@@ -498,12 +473,12 @@ namespace Integrated_Threat_Hunting_Tool
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox mlResultTextBox;
         private System.Windows.Forms.ToolStripButton windowsEventViewerButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripLabel selectCSVToolStripLabel;
         private System.Windows.Forms.ToolStripButton toolStripButtonCSV;
         private System.Windows.Forms.ToolStripMenuItem evtxECmdToolStripMenuItem;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DataGridView dataGridView1;
     }
 }
